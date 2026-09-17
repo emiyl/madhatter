@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "mh_rle.h"
+#include "rle.h"
 
 static void expect_bytes(const char *label, const uint8_t *actual, size_t actual_len,
                          const uint8_t *expected, size_t expected_len) {

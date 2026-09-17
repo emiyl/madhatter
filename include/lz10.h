@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "mh_stream.h"
+#include "stream.h"
 
 #ifdef __cplusplus
 extern "C" {

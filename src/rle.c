@@ -1,4 +1,4 @@
-#include "mh_rle.h"
+#include "rle.h"
 
 #include <stdlib.h>
 

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "mh_stream.h"
+#include "stream.h"
 
 int main(void) {
     const uint8_t bytes[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
