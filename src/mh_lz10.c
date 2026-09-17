@@ -1,63 +1,8 @@
-#include "madhatter.h"
+#include "mh_lz10.h"
 
 #include <stdlib.h>
-#include <string.h>
 
-void mh_buffer_init(mh_buffer *buf) {
-    if (!buf) {
-        return;
-    }
-    buf->data = NULL;
-    buf->len = 0;
-}
-
-void mh_buffer_free(mh_buffer *buf) {
-    if (!buf) {
-        return;
-    }
-    free(buf->data);
-    buf->data = NULL;
-    buf->len = 0;
-}
-
-int mh_buffer_resize(mh_buffer *buf, size_t new_len) {
-    uint8_t *tmp;
-    if (!buf) {
-        return -1;
-    }
-    if (new_len == 0) {
-        free(buf->data);
-        buf->data = NULL;
-        buf->len = 0;
-        return 0;
-    }
-    tmp = (uint8_t *)realloc(buf->data, new_len);
-    if (!tmp) {
-        return -1;
-    }
-    buf->data = tmp;
-    buf->len = new_len;
-    return 0;
-}
-
-int mh_buffer_append(mh_buffer *buf, const uint8_t *src, size_t src_len) {
-    size_t new_len;
-    uint8_t *tmp;
-    if (!buf || !src) {
-        return -1;
-    }
-    new_len = buf->len + src_len;
-    tmp = (uint8_t *)realloc(buf->data, new_len);
-    if (!tmp) {
-        return -1;
-    }
-    memcpy(tmp + buf->len, src, src_len);
-    buf->data = tmp;
-    buf->len = new_len;
-    return 0;
-}
-
-static uint32_t read_u24_le(const uint8_t *p) {
+static uint32_t mh_read_u24_le(const uint8_t *p) {
     return (uint32_t)p[0] | ((uint32_t)p[1] << 8) | ((uint32_t)p[2] << 16);
 }
 
@@ -81,7 +26,7 @@ int mh_lz10_decompress(const uint8_t *src, size_t src_len, mh_buffer *out) {
         return -1;
     }
 
-    out_cap = read_u24_le(&src[1]);
+    out_cap = mh_read_u24_le(&src[1]);
     out_data = (uint8_t *)calloc(out_cap ? out_cap : 1, sizeof(uint8_t));
     if (!out_data) {
         return -1;

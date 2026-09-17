@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "madhatter.h"
+#include "mh_lz10.h"
 
 static void expect_bytes(const char *label, const uint8_t *actual, size_t actual_len,
                          const uint8_t *expected, size_t expected_len) {
@@ -40,6 +40,7 @@ int main(void) {
 
     expect_bytes("lz10 decode", out.data, out.len, expected, sizeof(expected));
     mh_buffer_free(&out);
+
     puts("lz10 test passed");
     return 0;
 }
