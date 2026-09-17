@@ -1,7 +1,7 @@
 CC = cc
 CFLAGS = -std=c11 -Wall -Wextra -Iinclude
 
-all: test_stream test_lz10 test_rle test_huffman test_file test_asset test_archive test_layton_pack test_layton_pack2 test_dlz test_nazo test_nazo_list test_goal_info test_herbtea_event
+all: test_stream test_lz10 test_rle test_huffman test_file test_asset test_archive test_layton_pack test_layton_pack2 test_dlz test_nazo test_nazo_list test_goal_info test_herbtea_event test_event_descriptor_bank
 
 test_stream: tests/stream.c src/stream.c
 	$(CC) $(CFLAGS) -o test_stream tests/stream.c src/stream.c
@@ -45,5 +45,8 @@ test_goal_info: tests/goal_info.c src/goal_info.c src/stream.c
 test_herbtea_event: tests/herbtea_event.c src/herbtea_event.c src/stream.c
 	$(CC) $(CFLAGS) -o test_herbtea_event tests/herbtea_event.c src/herbtea_event.c src/stream.c
 
+test_event_descriptor_bank: tests/event_descriptor_bank.c src/event_descriptor_bank.c src/stream.c
+	$(CC) $(CFLAGS) -o test_event_descriptor_bank tests/event_descriptor_bank.c src/event_descriptor_bank.c src/stream.c
+
 clean:
-	rm -f test_stream test_lz10 test_rle test_huffman test_file test_asset test_archive test_layton_pack test_layton_pack2 test_dlz test_nazo test_nazo_list test_goal_info test_herbtea_event
+	rm -f test_stream test_lz10 test_rle test_huffman test_file test_asset test_archive test_layton_pack test_layton_pack2 test_dlz test_nazo test_nazo_list test_goal_info test_herbtea_event test_event_descriptor_bank
