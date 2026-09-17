@@ -179,7 +179,6 @@ int mh_archive_save_layton_pack(const mh_archive *archive, mh_buffer *out, int v
         const mh_archive_entry *entry = &archive->entries[i];
         uint32_t name_block_len = mh_align4((uint32_t)(mh_name_len(entry->name) + 1u));
         uint32_t payload_len = (uint32_t)entry->asset.len;
-        uint32_t header_len = (uint32_t)(name_block_len + payload_len);
         size_t j;
         uint32_t before_grid = 0u;
         uint32_t after_grid = 0u;

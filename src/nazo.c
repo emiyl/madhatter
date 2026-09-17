@@ -5,53 +5,6 @@
 
 #define MH_NAZO_HEADER_ALIGN 112u
 
-static void mh_nazo_set_string(char **dst, const char *src) {
-    size_t len = 0u;
-
-    if (!dst) {
-        return;
-    }
-    free(*dst);
-    *dst = NULL;
-
-    if (!src) {
-        return;
-    }
-
-    len = strlen(src) + 1u;
-    *dst = malloc(len);
-    if (!*dst) {
-        return;
-    }
-    memcpy(*dst, src, len);
-}
-
-static void mh_nazo_set_string_bytes(char **dst, const uint8_t *src, size_t len) {
-    size_t trimmed = len;
-
-    if (!dst) {
-        return;
-    }
-    free(*dst);
-    *dst = NULL;
-
-    if (!src || len == 0u) {
-        return;
-    }
-
-    while (trimmed > 0u && src[trimmed - 1u] == 0u) {
-        trimmed--;
-    }
-
-    *dst = malloc(trimmed + 1u);
-    if (!*dst) {
-        return;
-    }
-
-    memcpy(*dst, src, trimmed);
-    (*dst)[trimmed] = '\0';
-}
-
 static size_t mh_nazo_strlen(const char *s) {
     size_t len = 0u;
     if (!s) {
@@ -470,14 +423,12 @@ static int mh_nazo_save_common(const mh_nazo_data *nazo, mh_buffer *out, int is_
         return -1;
     }
     if (is_hd) {
-        size_t total = 0u;
         while ((writer.len % 4248u) != 0u) {
             if (mh_writer_write_u8(&writer, 0u) != 0) {
                 mh_writer_free(&writer);
                 mh_writer_free(&bank);
                 return -1;
             }
-            total++;
         }
     }
 
