@@ -1,7 +1,7 @@
 CC = cc
 CFLAGS = -std=c11 -Wall -Wextra -Iinclude
 
-all: test_stream test_lz10 test_rle test_huffman test_file test_asset test_archive
+all: test_stream test_lz10 test_rle test_huffman test_file test_asset test_archive test_layton_pack2
 
 test_stream: tests/stream.c src/stream.c
 	$(CC) $(CFLAGS) -o test_stream tests/stream.c src/stream.c
@@ -24,5 +24,8 @@ test_asset: tests/asset.c src/asset.c src/file.c src/huffman.c src/lz10.c src/rl
 test_archive: tests/archive.c src/archive.c src/asset.c src/file.c src/huffman.c src/lz10.c src/rle.c src/stream.c
 	$(CC) $(CFLAGS) -o test_archive tests/archive.c src/archive.c src/asset.c src/file.c src/huffman.c src/lz10.c src/rle.c src/stream.c
 
+test_layton_pack2: tests/layton_pack2.c src/layton_pack2.c src/archive.c src/asset.c src/file.c src/huffman.c src/lz10.c src/rle.c src/stream.c
+	$(CC) $(CFLAGS) -o test_layton_pack2 tests/layton_pack2.c src/layton_pack2.c src/archive.c src/asset.c src/file.c src/huffman.c src/lz10.c src/rle.c src/stream.c
+
 clean:
-	rm -f test_stream test_lz10 test_rle test_huffman test_file test_asset test_archive
+	rm -f test_stream test_lz10 test_rle test_huffman test_file test_asset test_archive test_layton_pack2
