@@ -3,7 +3,7 @@ AR = ar
 ARFLAGS = rcs
 CFLAGS = -std=c11 -Wall -Wextra -Iinclude
 PREFIX ?= /usr/local
-INCLUDEDIR ?= $(PREFIX)/include
+INCLUDEDIR ?= $(PREFIX)/include/madhatter
 LIBDIR ?= $(PREFIX)/lib
 
 SOURCES = $(wildcard src/*.c)
@@ -23,7 +23,7 @@ src/%.o: src/%.c include/*.h
 install: $(TARGET)
 	install -d $(INCLUDEDIR)
 	install -d $(LIBDIR)
-	install -m 0644 include/madhatter.h $(INCLUDEDIR)/madhatter.h
+	install -m 0644 include/*.h $(INCLUDEDIR)/
 	install -m 0644 $(TARGET) $(LIBDIR)/$(TARGET)
 
 clean:

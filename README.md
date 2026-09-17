@@ -61,8 +61,10 @@ sudo make install
 
 By default this installs to:
 
-- `/usr/local/include/madhatter.h`
+- `/usr/local/include/madhatter/*.h`
 - `/usr/local/lib/libmadhatter.a`
+
+This includes the umbrella header and all public component headers used by it under a dedicated `madhatter` include directory.
 
 You can override the installation prefix:
 
@@ -73,7 +75,7 @@ make install PREFIX=/opt/madhatter
 This installs to:
 
 ```bash
-/opt/madhatter/include/madhatter.h
+/opt/madhatter/include/madhatter/*.h
 /opt/madhatter/lib/libmadhatter.a
 ```
 
@@ -87,10 +89,10 @@ make clean
 
 ## Using the library
 
-Include the umbrella header:
+Include the umbrella header from the installed include directory:
 
 ```c
-#include "madhatter.h"
+#include "madhatter/madhatter.h"
 ```
 
 Then compile your program against the library:
