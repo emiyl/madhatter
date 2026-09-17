@@ -1,7 +1,7 @@
 CC = cc
 CFLAGS = -std=c11 -Wall -Wextra -Iinclude
 
-all: test_stream test_lz10 test_rle test_huffman test_file test_asset test_archive test_layton_pack test_layton_pack2 test_dlz test_nazo test_nazo_list
+all: test_stream test_lz10 test_rle test_huffman test_file test_asset test_archive test_layton_pack test_layton_pack2 test_dlz test_nazo test_nazo_list test_goal_info
 
 test_stream: tests/stream.c src/stream.c
 	$(CC) $(CFLAGS) -o test_stream tests/stream.c src/stream.c
@@ -39,5 +39,8 @@ test_nazo: tests/nazo.c src/nazo.c src/stream.c
 test_nazo_list: tests/nazo_list.c src/nazo_list.c src/stream.c
 	$(CC) $(CFLAGS) -o test_nazo_list tests/nazo_list.c src/nazo_list.c src/stream.c
 
+test_goal_info: tests/goal_info.c src/goal_info.c src/stream.c
+	$(CC) $(CFLAGS) -o test_goal_info tests/goal_info.c src/goal_info.c src/stream.c
+
 clean:
-	rm -f test_stream test_lz10 test_rle test_huffman test_file test_asset test_archive test_layton_pack test_layton_pack2 test_dlz test_nazo test_nazo_list
+	rm -f test_stream test_lz10 test_rle test_huffman test_file test_asset test_archive test_layton_pack test_layton_pack2 test_dlz test_nazo test_nazo_list test_goal_info
