@@ -1,7 +1,7 @@
 CC = cc
 CFLAGS = -std=c11 -Wall -Wextra -Iinclude
 
-all: test_stream test_lz10 test_rle test_huffman test_file
+all: test_stream test_lz10 test_rle test_huffman test_file test_asset
 
 test_stream: tests/stream.c src/stream.c
 	$(CC) $(CFLAGS) -o test_stream tests/stream.c src/stream.c
@@ -18,5 +18,8 @@ test_huffman: tests/huffman.c src/huffman.c src/stream.c
 test_file: tests/file.c src/file.c src/huffman.c src/lz10.c src/rle.c src/stream.c
 	$(CC) $(CFLAGS) -o test_file tests/file.c src/file.c src/huffman.c src/lz10.c src/rle.c src/stream.c
 
+test_asset: tests/asset.c src/asset.c src/file.c src/huffman.c src/lz10.c src/rle.c src/stream.c
+	$(CC) $(CFLAGS) -o test_asset tests/asset.c src/asset.c src/file.c src/huffman.c src/lz10.c src/rle.c src/stream.c
+
 clean:
-	rm -f test_stream test_lz10 test_rle test_huffman test_file
+	rm -f test_stream test_lz10 test_rle test_huffman test_file test_asset
