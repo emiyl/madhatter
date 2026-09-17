@@ -1,0 +1,27 @@
+#ifndef MH_MADHATTER_H
+#define MH_MADHATTER_H
+
+#include "archive.h"
+#include "asset.h"
+#include "chapter_info.h"
+#include "dlz.h"
+#include "event_base_list.h"
+#include "event_descriptor_bank.h"
+#include "event_info_list.h"
+#include "file.h"
+#include "goal_info.h"
+#include "herbtea_event.h"
+#include "huffman.h"
+#include "layton_pack.h"
+#include "layton_pack2.h"
+#include "lz10.h"
+#include "nazo.h"
+#include "nazo_list.h"
+#include "rle.h"
+#include "story_select_list.h"
+#include "storybook_photo.h"
+#include "stream.h"
+#include "submap_info.h"
+#include "time_definition.h"
+
+#endif
