@@ -5,24 +5,6 @@
 
 #define MH_LAYTON_PACK2_HEADER_SIZE 32u
 
-static char *mh_dup_cstring(const char *s) {
-    size_t len;
-    char *copy;
-
-    if (!s) {
-        return NULL;
-    }
-
-    len = strlen(s);
-    copy = malloc(len + 1u);
-    if (!copy) {
-        return NULL;
-    }
-
-    memcpy(copy, s, len + 1u);
-    return copy;
-}
-
 static int mh_read_cstring_from_buffer(const uint8_t *src, size_t src_len, size_t offset, char **out_name) {
     size_t len = 0u;
     char *name = NULL;
