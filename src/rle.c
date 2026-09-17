@@ -14,13 +14,20 @@ static int append_repeated_bytes(mh_buffer *out, uint8_t value, size_t count) {
 
 int mh_rle_decompress(const uint8_t *src, size_t src_len, mh_buffer *out) {
     mh_reader reader;
+    const uint8_t *payload = src;
+    size_t payload_len = src_len;
 
     if (!src || !out) {
         return -1;
     }
 
+    if (src_len >= 4u && src[0] == 0x30u) {
+        payload = src + 4u;
+        payload_len = src_len - 4u;
+    }
+
     mh_buffer_init(out);
-    mh_reader_init(&reader, src, src_len);
+    mh_reader_init(&reader, payload, payload_len);
 
     while (mh_reader_has_data(&reader)) {
         uint8_t flag = mh_reader_read_u8(&reader);
