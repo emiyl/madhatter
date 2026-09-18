@@ -12,7 +12,6 @@ static void mh_reader_skip(mh_reader *r, size_t n) {
     mh_reader_seek(r, r->pos + n);
 }
 
-/* cp1252 0x80-0x9F -> Unicode codepoint (0xA0-0xFF and 0x00-0x7F match Unicode directly). */
 static uint32_t mh_cp1252_high_to_unicode(uint8_t b) {
     static const uint16_t table[32] = {
         0x20AC, 0x0081, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
@@ -24,21 +23,12 @@ static uint32_t mh_cp1252_high_to_unicode(uint8_t b) {
 }
 
 static uint32_t mh_decode_char16(uint8_t byte_a, uint8_t byte_b, uint8_t decode_mode) {
-    /* decode_mode: 0=utf-8, 1=utf-16, 2=shift-jis, 3=cp1252. NFTR stores each
-     * character as a 2-byte pair; for single-byte encodings (0/2/3), Python
-     * decodes both bytes independently as single-byte characters and then
-     * strips NUL bytes, so in practice exactly one of the two bytes carries
-     * the real (ASCII-range) value and the other is 0x00 padding - and its
-     * position (first or second byte) is not fixed (contiguous PAMC ranges
-     * synthesize [0x00, value], the individual-definition PAMC block stores
-     * [value, 0x00]). True multi-byte Shift-JIS (e.g. Japanese glyphs) is not
-     * decoded, since this port only targets Latin text. */
     if (decode_mode == 1) {
         return ((uint32_t)byte_a << 8) | byte_b;
     }
 
     if (byte_a != 0 && byte_b != 0) {
-        return 0xFFFFFFFFu; /* genuine multi-byte sequence, not supported */
+        return 0xFFFFFFFFu;
     }
     {
         uint8_t value = byte_a != 0 ? byte_a : byte_b;
@@ -114,9 +104,9 @@ int mh_font_load_nftr(mh_font *font, const uint8_t *data, size_t len) {
     mh_reader_seek(&reader, (size_t)length_header + 4u);
     length_font_info = mh_reader_read_u32_le(&reader);
     mh_reader_skip(&reader, 1u);
-    mh_reader_read_u8(&reader); /* fontInfoHeight, unused */
+    mh_reader_read_u8(&reader); // fontInfoHeight, unused
     mh_reader_skip(&reader, 3u);
-    mh_reader_read_u8(&reader); /* fontInfoWidth, unused */
+    mh_reader_read_u8(&reader); // fontInfoWidth, unused
     mh_reader_skip(&reader, 1u);
     font_info_decode_mode = mh_reader_read_u8(&reader);
     offset_plgc = mh_reader_read_u32_le(&reader) - 8u;
@@ -129,8 +119,8 @@ int mh_font_load_nftr(mh_font *font, const uint8_t *data, size_t len) {
     tile_h = mh_reader_read_u8(&reader);
     length_tile = mh_reader_read_u16_le(&reader);
     mh_reader_skip(&reader, 2u);
-    mh_reader_read_u8(&reader); /* depth, unused */
-    mh_reader_read_u8(&reader); /* rotate, unused */
+    mh_reader_read_u8(&reader); // depth, unused
+    mh_reader_read_u8(&reader); // rotate, unused
 
     if (tile_w <= 0 || tile_h <= 0 || length_tile == 0u || length_plgc < 16u) {
         return -1;
@@ -199,7 +189,7 @@ int mh_font_load_nftr(mh_font *font, const uint8_t *data, size_t len) {
             uint32_t code;
 
             mh_reader_seek(&reader, (size_t)offset_next + 4u);
-            mh_reader_read_u32_le(&reader); /* lengthPamc, unused */
+            mh_reader_read_u32_le(&reader); // lengthPamc, unused
             code_first = mh_reader_read_u16_le(&reader);
             code_last = mh_reader_read_u16_le(&reader);
             type_pamc = mh_reader_read_u32_le(&reader);
@@ -268,7 +258,6 @@ const mh_font_glyph *mh_font_find_glyph(const mh_font *font, uint32_t codepoint)
     return NULL;
 }
 
-/* Decodes one UTF-8 codepoint starting at *p, advancing *p past it. */
 static uint32_t mh_utf8_next(const char **p) {
     const unsigned char *s = (const unsigned char *)*p;
     uint32_t cp;
@@ -365,9 +354,9 @@ int mh_font_render_string(const mh_font *font,
             for (gx = 0; gx < glyph->cell_width; ++gx) {
                 uint8_t intensity = glyph->bitmap[gy * glyph->cell_width + gx];
                 size_t dst = ((size_t)gy * (size_t)total_width + (size_t)(x_offset + gx)) * 4u;
-                pixels[dst + 0u] = 255u;
-                pixels[dst + 1u] = 255u;
-                pixels[dst + 2u] = 255u;
+                pixels[dst + 0u] = 0u;
+                pixels[dst + 1u] = 0u;
+                pixels[dst + 2u] = 0u;
                 pixels[dst + 3u] = intensity;
             }
         }
