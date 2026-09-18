@@ -1,9 +1,9 @@
 #include "mh_place.h"
 
 #include <string.h>
+#include <stdio.h>
 
 #include "stream.h"
-#include "log.h"
 
 #define MH_PLACE_OFF_POS_MAP 24u
 #define MH_PLACE_HINTCOIN_COUNT 4u
@@ -33,7 +33,7 @@ int mh_place_load_nds(mh_place_data *place, const uint8_t *data, size_t len) {
     size_t i;
 
     if (!place || !data) {
-        log_error("[mh_place_load_nds] Invalid arguments to mh_place_load_nds");
+        fprintf(stderr, "madhatter: Invalid arguments to mh_place_load_nds\n");
         return -1;
     }
     memset(place, 0, sizeof(*place));
@@ -43,7 +43,7 @@ int mh_place_load_nds(mh_place_data *place, const uint8_t *data, size_t len) {
     place->id_name_place = mh_reader_read_u8(&reader);
     mh_reader_seek(&reader, MH_PLACE_OFF_POS_MAP);
     if (!mh_reader_has_data(&reader)) {
-        log_error("[mh_place_load_nds] Failed to read map position from place data");
+        fprintf(stderr, "madhatter: Failed to read map position from place data\n");
         return -1;
     }
 
@@ -63,7 +63,7 @@ int mh_place_load_nds(mh_place_data *place, const uint8_t *data, size_t len) {
         size_t remaining;
 
         if (reader.pos + MH_PLACE_EXIT_SIZE > len) {
-            log_error("[mh_place_load_nds] Not enough data to read exit %zu", i);
+            fprintf(stderr, "madhatter: Not enough data to read exit %zu\n", i);
             return -1;
         }
 
@@ -91,7 +91,7 @@ int mh_place_load_nds(mh_place_data *place, const uint8_t *data, size_t len) {
 
     mh_reader_seek(&reader, reader.pos + MH_PLACE_TAIL_PAD);
     if (reader.pos + 2u > len) {
-        log_error("[mh_place_load_nds] Not enough data to read place tail pad");
+        fprintf(stderr, "madhatter: Not enough data to read place tail pad\n");
         return -1;
     }
     place->id_sound = mh_reader_read_u16_le(&reader);
