@@ -3,9 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "asset.h"
 #include "layton_pack.h"
+#include "layton_pack2.h"
 
 int mh_datafiles_init(mh_datafiles *df, const char *root, const char *language) {
     size_t root_len;
@@ -153,7 +155,21 @@ int mh_datafiles_get_pack(const mh_datafiles *df, const char *rel_path, mh_archi
         return -1;
     }
 
-    result = mh_archive_load_layton_pack(out, data.data, data.len, 1);
+    bool isLaytonPack2 =
+        (data.len >= 4u && (
+            memcmp(data.data, "LPC2", 4u) == 0 ||
+            memcmp(data.data, "PCK2", 4u) == 0
+        )) ||
+        (data.len >= 16u && memcmp(data.data + 12u, "PCK2", 4u) == 0);
+
+    if (isLaytonPack2) {
+        result = mh_archive_load_layton_pack2(out, data.data, data.len);
+    } else {
+        result = mh_archive_load_layton_pack(out, data.data, data.len, 1);
+        if (result != 0) {
+            result = mh_archive_load_layton_pack2(out, data.data, data.len);
+        }
+    }
     mh_buffer_free(&data);
     return result;
 }

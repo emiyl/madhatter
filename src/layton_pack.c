@@ -95,7 +95,10 @@ int mh_archive_load_layton_pack(mh_archive *archive, const uint8_t *data, size_t
 
         name_len = metadata[0] - MH_LAYTON_PACK_METADATA_SIZE;
         payload_len = metadata[3];
-        if (name_len == 0u || payload_len == 0u) {
+        if (payload_len == 0u) {
+            break;
+        }
+        if (name_len == 0u) {
             mh_archive_free(archive);
             return -1;
         }
