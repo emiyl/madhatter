@@ -36,7 +36,7 @@ int mh_lz10_decompress(const uint8_t *src, size_t src_len, mh_buffer *out) {
     while (src_pos < src_len && out_pos < out_cap) {
         uint8_t control = src[src_pos++];
 
-        for (int bit = 0; bit < 8 && src_pos < src_len && out_pos < out_cap; ++bit) {
+        for (int bit = 7; bit >= 0 && src_pos < src_len && out_pos < out_cap; --bit) {
             if ((control & (1u << bit)) != 0u) {
                 uint8_t b1;
                 uint8_t b2;
@@ -51,7 +51,7 @@ int mh_lz10_decompress(const uint8_t *src, size_t src_len, mh_buffer *out) {
 
                 b1 = src[src_pos++];
                 b2 = src[src_pos++];
-                disp = (uint16_t)(((uint16_t)(b1 & 0x0Fu) << 8) | b2);
+                disp = (uint16_t)((((uint16_t)(b1 & 0x0Fu) << 8) | b2) + 1u);
                 length = (uint16_t)(((uint16_t)(b1 >> 4) & 0x0Fu) + 3u);
 
                 if (disp == 0u || disp > out_pos) {
