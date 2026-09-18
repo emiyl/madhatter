@@ -49,6 +49,9 @@ int mh_archive_load_layton_pack2(mh_archive *archive, const uint8_t *data, size_
     uint32_t offset_metadata;
     uint32_t offset_name;
     uint32_t index;
+    size_t magic_offset = 0u;
+    int found_magic = 0;
+    size_t candidate;
 
     if (!archive || !data || len < MH_LAYTON_PACK2_HEADER_SIZE) {
         return -1;
@@ -57,18 +60,41 @@ int mh_archive_load_layton_pack2(mh_archive *archive, const uint8_t *data, size_
     mh_archive_init(archive);
     mh_reader_init(&reader, data, len);
 
-    if (memcmp(data, "LPC2", 4u) != 0) {
+    for (candidate = 0u; candidate + 4u <= len && candidate < 32u; ++candidate) {
+        if (memcmp(data + candidate, "LPC2", 4u) == 0 || memcmp(data + candidate, "PCK2", 4u) == 0) {
+            magic_offset = candidate;
+            found_magic = 1;
+            break;
+        }
+    }
+
+    if (!found_magic) {
         return -1;
     }
 
-    mh_reader_seek(&reader, 4u);
+    mh_reader_seek(&reader, magic_offset + 4u);
     count_file = mh_reader_read_u32_le(&reader);
     offset_file = mh_reader_read_u32_le(&reader);
     mh_reader_read_u32_le(&reader);
     offset_metadata = mh_reader_read_u32_le(&reader);
     offset_name = mh_reader_read_u32_le(&reader);
 
-    if (offset_metadata == 0u || offset_name == 0u || offset_file == 0u) {
+    if (count_file == 0u || offset_file == 0u || offset_name == 0u || offset_metadata == 0u) {
+        size_t shifted = magic_offset > 8u ? magic_offset - 8u : 0u;
+        if (shifted + 20u <= len) {
+            mh_reader_init(&reader, data + shifted, len - shifted);
+            mh_reader_seek(&reader, 4u);
+            count_file = mh_reader_read_u32_le(&reader);
+            offset_file = mh_reader_read_u32_le(&reader);
+            mh_reader_read_u32_le(&reader);
+            offset_metadata = mh_reader_read_u32_le(&reader);
+            offset_name = mh_reader_read_u32_le(&reader);
+        }
+    }
+
+    if (count_file == 0u || offset_file == 0u || offset_name == 0u || offset_metadata == 0u ||
+        offset_file > len || offset_metadata > len || offset_name > len) {
+        mh_archive_free(archive);
         return -1;
     }
 
