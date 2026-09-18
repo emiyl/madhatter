@@ -15,6 +15,7 @@
 #include "layton_pack.h"
 #include "layton_pack2.h"
 #include "lz10.h"
+#include "mh_anim.h"
 #include "mh_datafiles.h"
 #include "mh_font.h"
 #include "mh_image.h"
