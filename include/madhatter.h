@@ -16,6 +16,7 @@
 #include "layton_pack2.h"
 #include "lz10.h"
 #include "mh_datafiles.h"
+#include "mh_font.h"
 #include "mh_image.h"
 #include "mh_place.h"
 #include "nazo.h"
