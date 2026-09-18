@@ -52,6 +52,12 @@ int mh_file_detect_compression_type(const uint8_t *src, size_t src_len, size_t o
 
     switch (src[offset]) {
         case MH_COMP_LZ10:
+            if (src_len < offset + 4u) {
+                return MH_COMP_NONE;
+            }
+            if ((src[offset + 1] | src[offset + 2] | src[offset + 3]) == 0u) {
+                return MH_COMP_NONE;
+            }
             return MH_COMP_LZ10;
         case MH_COMP_HUFFMAN_4:
             return MH_COMP_HUFFMAN_4;

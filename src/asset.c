@@ -24,6 +24,40 @@ void mh_asset_free(mh_asset *asset) {
     asset->compression_type = 0;
 }
 
+static int mh_asset_probe_compression(const uint8_t *data, size_t len, int type) {
+    mh_buffer decoded = {0};
+    int status = -1;
+
+    if (!data || len == 0u) {
+        return -1;
+    }
+
+    switch (type) {
+        case MH_COMP_LZ10:
+            status = mh_lz10_decompress(data, len, &decoded);
+            break;
+        case MH_COMP_HUFFMAN_4:
+            status = mh_huffman_decompress(data, len, &decoded, 1);
+            break;
+        case MH_COMP_HUFFMAN_8:
+            status = mh_huffman_decompress(data, len, &decoded, 0);
+            break;
+        case MH_COMP_RLE:
+            status = mh_rle_decompress(data, len, &decoded);
+            break;
+        default:
+            return -1;
+    }
+
+    if (status != 0 || decoded.len == 0u) {
+        mh_buffer_free(&decoded);
+        return -1;
+    }
+
+    mh_buffer_free(&decoded);
+    return 0;
+}
+
 int mh_asset_init_from_bytes(mh_asset *asset, const uint8_t *data, size_t len) {
     int type = MH_COMP_NONE;
     size_t offset = 0u;
@@ -46,6 +80,9 @@ int mh_asset_init_from_bytes(mh_asset *asset, const uint8_t *data, size_t len) {
     if (type == MH_COMP_NONE && len >= 8u) {
         offset = 4u;
         type = mh_file_detect_compression_type(data, len, offset);
+    }
+    if (type != MH_COMP_NONE && mh_asset_probe_compression(data + offset, len - offset, type) != 0) {
+        type = MH_COMP_NONE;
     }
 
     asset->compression_type = type;
