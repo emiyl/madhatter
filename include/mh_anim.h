@@ -8,7 +8,6 @@
 extern "C" {
 #endif
 
-/* One decoded sub-image (RGBA8888, palette index 0 treated as transparent). */
 typedef struct {
     uint8_t *pixels;
     int width;
@@ -16,14 +15,18 @@ typedef struct {
 } mh_anim_frame;
 
 typedef struct {
+    uint32_t keyframe_index;
+    uint32_t duration_frames;
+    int frame_index;
+} mh_anim_keyframe;
+
+typedef struct {
     char name[31];
-    int first_frame_index; /* index into mh_anim_image.frames, or -1 if empty */
+    int first_frame_index;
+    size_t keyframe_count;
+    mh_anim_keyframe *keyframes;
 } mh_anim_animation;
 
-/* C port of widebrim's AnimatedImage.fromBytesArc (non-arj tile-atlas sprite
- * format used for exit/button/UI graphics such as map/exit_%i.arc). Only the
- * static single-atlas subset needed to look up a frame by animation name is
- * implemented; keyframe timing/sub-animations are not. */
 typedef struct {
     mh_anim_frame *frames;
     size_t frame_count;
@@ -34,8 +37,9 @@ typedef struct {
 int mh_anim_decode_arc(const uint8_t *data, size_t len, mh_anim_image *out);
 void mh_anim_free(mh_anim_image *image);
 
-/* Returns the frame referenced by the first keyframe of the named animation. */
+const mh_anim_animation *mh_anim_get_animation_by_name(const mh_anim_image *image, const char *name);
 const mh_anim_frame *mh_anim_get_frame_by_animation_name(const mh_anim_image *image, const char *name);
+int mh_anim_get_animation_frame_index(const mh_anim_image *image, const char *name, uint64_t elapsed_ms);
 
 #ifdef __cplusplus
 }

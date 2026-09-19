@@ -52,10 +52,79 @@ int mh_place_load_nds(mh_place_data *place, const uint8_t *data, size_t len) {
     place->bg_main_id = mh_reader_read_u8(&reader);
     place->bg_map_id = mh_reader_read_u8(&reader);
 
-    mh_reader_seek(&reader, reader.pos + (MH_PLACE_HINTCOIN_COUNT * MH_PLACE_HINTCOIN_SIZE));
-    mh_reader_seek(&reader, reader.pos + (MH_PLACE_TOBJ_COUNT * MH_PLACE_TOBJ_SIZE));
-    mh_reader_seek(&reader, reader.pos + (MH_PLACE_BGANI_COUNT * MH_PLACE_BGANI_SIZE));
-    mh_reader_seek(&reader, reader.pos + (MH_PLACE_EVENT_COUNT * MH_PLACE_EVENT_SIZE));
+    for (i = 0; i < MH_PLACE_HINTCOIN_COUNT; ++i) {
+        uint8_t x, y, w, h;
+        if (reader.pos + MH_PLACE_HINTCOIN_SIZE > len) {
+            fprintf(stderr, "madhatter: Not enough data to read hint coin %zu\n", i);
+            return -1;
+        }
+        x = mh_reader_read_u8(&reader);
+        y = mh_reader_read_u8(&reader);
+        w = mh_reader_read_u8(&reader);
+        h = mh_reader_read_u8(&reader);
+        if (x == 0u && y == 0u && w == 0u && h == 0u) {
+            mh_reader_seek(&reader, reader.pos + ((MH_PLACE_HINTCOIN_COUNT - i - 1u) * MH_PLACE_HINTCOIN_SIZE));
+            break;
+        }
+    }
+
+    for (i = 0; i < MH_PLACE_TOBJ_COUNT; ++i) {
+        uint8_t x, y, w, h;
+        if (reader.pos + MH_PLACE_TOBJ_SIZE > len) {
+            fprintf(stderr, "madhatter: Not enough data to read object text %zu\n", i);
+            return -1;
+        }
+        x = mh_reader_read_u8(&reader);
+        y = mh_reader_read_u8(&reader);
+        w = mh_reader_read_u8(&reader);
+        h = mh_reader_read_u8(&reader);
+        mh_reader_seek(&reader, reader.pos + 6u);
+        if (x == 0u && y == 0u && w == 0u && h == 0u) {
+            mh_reader_seek(&reader, reader.pos + ((MH_PLACE_TOBJ_COUNT - i - 1u) * MH_PLACE_TOBJ_SIZE));
+            break;
+        }
+    }
+
+    place->bg_ani_count = 0u;
+    for (i = 0; i < MH_PLACE_BGANI_COUNT; ++i) {
+        mh_place_bg_ani bg_ani;
+        if (reader.pos + MH_PLACE_BGANI_SIZE > len) {
+            fprintf(stderr, "madhatter: Not enough data to read background animation %zu\n", i);
+            return -1;
+        }
+
+        memset(&bg_ani, 0, sizeof(bg_ani));
+        bg_ani.x = mh_reader_read_u8(&reader);
+        bg_ani.y = mh_reader_read_u8(&reader);
+        for (size_t j = 0; j < sizeof(bg_ani.name) - 1u; ++j) {
+            bg_ani.name[j] = (char)mh_reader_read_u8(&reader);
+        }
+        bg_ani.name[sizeof(bg_ani.name) - 1u] = '\0';
+
+        if (bg_ani.x == 0u && bg_ani.y == 0u && bg_ani.name[0] == '\0') {
+            mh_reader_seek(&reader, reader.pos + ((MH_PLACE_BGANI_COUNT - i - 1u) * MH_PLACE_BGANI_SIZE));
+            break;
+        }
+
+        place->bg_ani[place->bg_ani_count++] = bg_ani;
+    }
+
+    for (i = 0; i < MH_PLACE_EVENT_COUNT; ++i) {
+        uint8_t x, y, w, h;
+        if (reader.pos + MH_PLACE_EVENT_SIZE > len) {
+            fprintf(stderr, "madhatter: Not enough data to read event %zu\n", i);
+            return -1;
+        }
+        x = mh_reader_read_u8(&reader);
+        y = mh_reader_read_u8(&reader);
+        w = mh_reader_read_u8(&reader);
+        h = mh_reader_read_u8(&reader);
+        mh_reader_seek(&reader, reader.pos + 4u);
+        if (x == 0u && y == 0u && w == 0u && h == 0u) {
+            mh_reader_seek(&reader, reader.pos + ((MH_PLACE_EVENT_COUNT - i - 1u) * MH_PLACE_EVENT_SIZE));
+            break;
+        }
+    }
 
     place->exit_count = 0;
     for (i = 0; i < MH_PLACE_MAX_EXITS; ++i) {

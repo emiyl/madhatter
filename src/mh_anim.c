@@ -14,7 +14,7 @@ typedef struct {
     uint32_t subimage_index;
     int offset_x, offset_y;
     int width, height;
-    uint8_t *raw; /* width*height*bpp/8 bytes, packed pixels */
+    uint8_t *raw;
 } mh_anim_raw_tile;
 
 static int mh_anim_read_bytes(mh_reader *r, uint8_t *dst, size_t n) {
@@ -247,40 +247,62 @@ int mh_anim_decode_arc(const uint8_t *data, size_t len, mh_anim_image *out) {
 
         for (a = 0; a < count_anims; ++a) {
             uint32_t count_frames = mh_reader_read_u32_le(&reader);
-            uint32_t *index_keyframe;
-            uint32_t *index_frame;
+            uint32_t *index_keyframe = NULL;
+            uint32_t *duration_frame = NULL;
+            uint32_t *index_frame = NULL;
             uint32_t k;
-            uint32_t best_key = 0;
+            uint32_t best_key = UINT32_MAX;
             int best_frame = -1;
-            int have_best = 0;
 
             if (count_frames == 0u || count_frames > 1024u) {
                 out->animations[a].first_frame_index = -1;
+                out->animations[a].keyframe_count = 0u;
+                out->animations[a].keyframes = NULL;
                 continue;
             }
+
             index_keyframe = (uint32_t *)malloc((size_t)count_frames * sizeof(uint32_t));
+            duration_frame = (uint32_t *)malloc((size_t)count_frames * sizeof(uint32_t));
             index_frame = (uint32_t *)malloc((size_t)count_frames * sizeof(uint32_t));
-            if (!index_keyframe || !index_frame) {
+            if (!index_keyframe || !duration_frame || !index_frame) {
                 free(index_keyframe);
+                free(duration_frame);
                 free(index_frame);
                 goto fail;
             }
             for (k = 0; k < count_frames; ++k) {
                 index_keyframe[k] = mh_reader_read_u32_le(&reader);
             }
-            mh_reader_seek(&reader, reader.pos + (size_t)count_frames * 4u); /* duration, unused */
+            for (k = 0; k < count_frames; ++k) {
+                duration_frame[k] = mh_reader_read_u32_le(&reader);
+            }
             for (k = 0; k < count_frames; ++k) {
                 index_frame[k] = mh_reader_read_u32_le(&reader);
             }
+
+            out->animations[a].keyframe_count = count_frames;
+            out->animations[a].keyframes = (mh_anim_keyframe *)calloc(count_frames, sizeof(mh_anim_keyframe));
+            if (!out->animations[a].keyframes) {
+                free(index_keyframe);
+                free(duration_frame);
+                free(index_frame);
+                goto fail;
+            }
+
             for (k = 0; k < count_frames; ++k) {
-                if (!have_best || index_keyframe[k] < best_key) {
+                out->animations[a].keyframes[k].keyframe_index = index_keyframe[k];
+                out->animations[a].keyframes[k].duration_frames = duration_frame[k];
+                out->animations[a].keyframes[k].frame_index = (int)index_frame[k];
+
+                if (index_keyframe[k] < best_key) {
                     best_key = index_keyframe[k];
                     best_frame = (int)index_frame[k];
-                    have_best = 1;
                 }
             }
+
             out->animations[a].first_frame_index = best_frame;
             free(index_keyframe);
+            free(duration_frame);
             free(index_frame);
         }
     }
@@ -313,19 +335,59 @@ void mh_anim_free(mh_anim_image *image) {
     memset(image, 0, sizeof(*image));
 }
 
-const mh_anim_frame *mh_anim_get_frame_by_animation_name(const mh_anim_image *image, const char *name) {
+const mh_anim_animation *mh_anim_get_animation_by_name(const mh_anim_image *image, const char *name) {
     size_t i;
     if (!image || !name) {
         return NULL;
     }
     for (i = 0; i < image->animation_count; ++i) {
         if (strcmp(image->animations[i].name, name) == 0) {
-            int idx = image->animations[i].first_frame_index;
-            if (idx >= 0 && (size_t)idx < image->frame_count) {
-                return &image->frames[idx];
-            }
-            return NULL;
+            return &image->animations[i];
         }
     }
     return NULL;
+}
+
+const mh_anim_frame *mh_anim_get_frame_by_animation_name(const mh_anim_image *image, const char *name) {
+    const mh_anim_animation *animation = mh_anim_get_animation_by_name(image, name);
+    if (!animation) {
+        return NULL;
+    }
+    if (animation->first_frame_index >= 0 && (size_t)animation->first_frame_index < image->frame_count) {
+        return &image->frames[animation->first_frame_index];
+    }
+    return NULL;
+}
+
+int mh_anim_get_animation_frame_index(const mh_anim_image *image, const char *name, uint64_t elapsed_ms) {
+    const mh_anim_animation *animation = mh_anim_get_animation_by_name(image, name);
+    size_t i;
+    uint64_t total_duration_ms = 0u;
+    uint64_t remaining = elapsed_ms;
+
+    if (!image || !name || !animation || animation->keyframe_count == 0u) {
+        return (animation && animation->first_frame_index >= 0) ? animation->first_frame_index : -1;
+    }
+
+    for (i = 0; i < animation->keyframe_count; ++i) {
+        uint64_t duration_ms = (animation->keyframes[i].duration_frames == 0u)
+                                   ? 1u
+                                   : (((uint64_t)animation->keyframes[i].duration_frames * 1000u) / 60u);
+        total_duration_ms += duration_ms;
+    }
+    if (total_duration_ms == 0u) {
+        return animation->first_frame_index;
+    }
+    remaining %= total_duration_ms;
+
+    for (i = 0; i < animation->keyframe_count; ++i) {
+        uint64_t duration_ms = (animation->keyframes[i].duration_frames == 0u)
+                                   ? 1u
+                                   : (((uint64_t)animation->keyframes[i].duration_frames * 1000u) / 60u);
+        if (remaining < duration_ms) {
+            return animation->keyframes[i].frame_index;
+        }
+        remaining -= duration_ms;
+    }
+    return animation->keyframes[animation->keyframe_count - 1u].frame_index;
 }

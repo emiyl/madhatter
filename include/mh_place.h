@@ -9,10 +9,16 @@ extern "C" {
 #endif
 
 #define MH_PLACE_MAX_EXITS 12
+#define MH_PLACE_BGANI_COUNT 12u
 
 typedef struct {
     uint8_t x, y, width, height;
 } mh_bounding_box;
+
+typedef struct {
+    uint8_t x, y;
+    char name[31];
+} mh_place_bg_ani;
 
 typedef struct {
     mh_bounding_box bounding;
@@ -29,6 +35,8 @@ typedef struct {
     uint8_t bg_main_id;
     uint8_t bg_map_id;
     uint16_t id_sound;
+    mh_place_bg_ani bg_ani[MH_PLACE_BGANI_COUNT];
+    size_t bg_ani_count;
     mh_place_exit exits[MH_PLACE_MAX_EXITS];
     size_t exit_count;
 } mh_place_data;
