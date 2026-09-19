@@ -109,21 +109,28 @@ int mh_place_load_nds(mh_place_data *place, const uint8_t *data, size_t len) {
         place->bg_ani[place->bg_ani_count++] = bg_ani;
     }
 
+    place->event_count = 0u;
     for (i = 0; i < MH_PLACE_EVENT_COUNT; ++i) {
-        uint8_t x, y, w, h;
+        mh_place_event event;
         if (reader.pos + MH_PLACE_EVENT_SIZE > len) {
             fprintf(stderr, "madhatter: Not enough data to read event %zu\n", i);
             return -1;
         }
-        x = mh_reader_read_u8(&reader);
-        y = mh_reader_read_u8(&reader);
-        w = mh_reader_read_u8(&reader);
-        h = mh_reader_read_u8(&reader);
-        mh_reader_seek(&reader, reader.pos + 4u);
-        if (x == 0u && y == 0u && w == 0u && h == 0u) {
+
+        memset(&event, 0, sizeof(event));
+        event.bounding.x = mh_reader_read_u8(&reader);
+        event.bounding.y = mh_reader_read_u8(&reader);
+        event.bounding.width = mh_reader_read_u8(&reader);
+        event.bounding.height = mh_reader_read_u8(&reader);
+        event.id_image = mh_reader_read_u16_le(&reader);
+        event.id_event = mh_reader_read_u16_le(&reader);
+
+        if (mh_place_bounding_is_empty(&event.bounding)) {
             mh_reader_seek(&reader, reader.pos + ((MH_PLACE_EVENT_COUNT - i - 1u) * MH_PLACE_EVENT_SIZE));
             break;
         }
+
+        place->events[place->event_count++] = event;
     }
 
     place->exit_count = 0;
