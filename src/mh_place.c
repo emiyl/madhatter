@@ -6,7 +6,6 @@
 #include "stream.h"
 
 #define MH_PLACE_OFF_POS_MAP 24u
-#define MH_PLACE_HINTCOIN_COUNT 4u
 #define MH_PLACE_HINTCOIN_SIZE 4u
 #define MH_PLACE_TOBJ_COUNT 16u
 #define MH_PLACE_TOBJ_SIZE 10u
@@ -52,20 +51,23 @@ int mh_place_load_nds(mh_place_data *place, const uint8_t *data, size_t len) {
     place->bg_main_id = mh_reader_read_u8(&reader);
     place->bg_map_id = mh_reader_read_u8(&reader);
 
+    place->hint_coin_count = 0u;
     for (i = 0; i < MH_PLACE_HINTCOIN_COUNT; ++i) {
-        uint8_t x, y, w, h;
+        mh_place_hint_coin hint;
         if (reader.pos + MH_PLACE_HINTCOIN_SIZE > len) {
             fprintf(stderr, "madhatter: Not enough data to read hint coin %zu\n", i);
             return -1;
         }
-        x = mh_reader_read_u8(&reader);
-        y = mh_reader_read_u8(&reader);
-        w = mh_reader_read_u8(&reader);
-        h = mh_reader_read_u8(&reader);
-        if (x == 0u && y == 0u && w == 0u && h == 0u) {
+        memset(&hint, 0, sizeof(hint));
+        hint.bounding.x = mh_reader_read_u8(&reader);
+        hint.bounding.y = mh_reader_read_u8(&reader);
+        hint.bounding.width = mh_reader_read_u8(&reader);
+        hint.bounding.height = mh_reader_read_u8(&reader);
+        if (mh_place_bounding_is_empty(&hint.bounding)) {
             mh_reader_seek(&reader, reader.pos + ((MH_PLACE_HINTCOIN_COUNT - i - 1u) * MH_PLACE_HINTCOIN_SIZE));
             break;
         }
+        place->hint_coins[place->hint_coin_count++] = hint;
     }
 
     for (i = 0; i < MH_PLACE_TOBJ_COUNT; ++i) {

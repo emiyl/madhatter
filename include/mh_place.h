@@ -11,10 +11,15 @@ extern "C" {
 #define MH_PLACE_MAX_EXITS 12
 #define MH_PLACE_BGANI_COUNT 12u
 #define MH_PLACE_EVENT_COUNT 16u
+#define MH_PLACE_HINTCOIN_COUNT 4u
 
 typedef struct {
     uint8_t x, y, width, height;
 } mh_bounding_box;
+
+typedef struct {
+    mh_bounding_box bounding;
+} mh_place_hint_coin;
 
 typedef struct {
     uint8_t x, y;
@@ -42,6 +47,8 @@ typedef struct {
     uint8_t bg_main_id;
     uint8_t bg_map_id;
     uint16_t id_sound;
+    mh_place_hint_coin hint_coins[MH_PLACE_HINTCOIN_COUNT];
+    size_t hint_coin_count;
     mh_place_bg_ani bg_ani[MH_PLACE_BGANI_COUNT];
     size_t bg_ani_count;
     mh_place_event events[MH_PLACE_EVENT_COUNT];
