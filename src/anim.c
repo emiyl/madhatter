@@ -1,9 +1,9 @@
-#include "anim.h"
+#include "mh_anim.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-#include "stream.h"
+#include "mh_stream.h"
 
 #define MH_ANIM_MAX_SUBIMAGES 256u
 #define MH_ANIM_MAX_TILES 4096u

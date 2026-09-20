@@ -1,4 +1,4 @@
-#include "huffman.h"
+#include "mh_huffman.h"
 
 #include <stdlib.h>
 #include <string.h>

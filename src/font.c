@@ -1,9 +1,9 @@
-#include "font.h"
+#include "mh_font.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-#include "stream.h"
+#include "mh_stream.h"
 
 #define MH_FONT_MAX_GLYPHS 8192u
 #define MH_FONT_CHAR_BIAS 1

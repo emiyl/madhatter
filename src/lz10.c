@@ -1,4 +1,4 @@
-#include "lz10.h"
+#include "mh_lz10.h"
 
 #include <stdlib.h>
 

@@ -1,4 +1,4 @@
-#include "stream.h"
+#include "mh_stream.h"
 
 #include <stdlib.h>
 #include <string.h>

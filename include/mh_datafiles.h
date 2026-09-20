@@ -3,8 +3,8 @@
 
 #include <stddef.h>
 
-#include "archive.h"
-#include "stream.h"
+#include "mh_archive.h"
+#include "mh_stream.h"
 
 #ifdef __cplusplus
 extern "C" {

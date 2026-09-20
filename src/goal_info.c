@@ -1,4 +1,4 @@
-#include "goal_info.h"
+#include "mh_goal_info.h"
 
 #include <stdlib.h>
 #include <string.h>

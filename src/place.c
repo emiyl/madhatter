@@ -1,9 +1,9 @@
-#include "place.h"
+#include "mh_place.h"
 
 #include <string.h>
 #include <stdio.h>
 
-#include "stream.h"
+#include "mh_stream.h"
 
 #define MH_PLACE_OFF_POS_MAP 24u
 #define MH_PLACE_HINTCOIN_SIZE 4u

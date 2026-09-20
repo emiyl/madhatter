@@ -1,13 +1,14 @@
-#include "datafiles.h"
+#include "mh_datafiles.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
-#include "asset.h"
-#include "layton_pack.h"
-#include "layton_pack2.h"
+#include "mh_asset.h"
+#include "mh_layton_pack.h"
+#include "mh_layton_pack2.h"
+#include "mh_result.h"
 
 int mh_datafiles_init(mh_datafiles *df, const char *root, const char *language) {
     size_t root_len;
@@ -122,19 +123,20 @@ int mh_datafiles_get_data(const mh_datafiles *df, const char *rel_path, mh_buffe
     int result;
 
     if (!df || !rel_path || !out) {
-        return -1;
+        return RESULT_ERROR_INVALID_ARGUMENT;
     }
     if (mh_datafiles_build_path(df, rel_path, path, sizeof(path)) != 0) {
-        return -1;
+        return RESULT_ERROR_UNKNOWN;
     }
     if (mh_datafiles_read_raw(path, &raw, &raw_len) != 0) {
-        return -1;
+        return RESULT_ERROR_FILE_NOT_FOUND;
     }
 
     if (mh_asset_init_from_bytes(&asset, raw, raw_len) != 0) {
         free(raw);
-        return -1;
+        return RESULT_ERROR_INVALID_ARGUMENT;
     }
+    
     free(raw);
 
     result = mh_asset_decompress(&asset, out);

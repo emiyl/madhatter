@@ -1,4 +1,4 @@
-#include "story_select_list.h"
+#include "mh_story_select_list.h"
 
 #include <stdlib.h>
 #include <string.h>

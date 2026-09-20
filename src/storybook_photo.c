@@ -1,4 +1,4 @@
-#include "storybook_photo.h"
+#include "mh_storybook_photo.h"
 
 #include <stdlib.h>
 #include <string.h>

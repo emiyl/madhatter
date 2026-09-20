@@ -1,4 +1,4 @@
-#include "submap_info.h"
+#include "mh_submap_info.h"
 
 #include <stdlib.h>
 #include <string.h>

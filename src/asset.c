@@ -1,11 +1,11 @@
-#include "asset.h"
+#include "mh_asset.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-#include "lz10.h"
-#include "rle.h"
-#include "huffman.h"
+#include "mh_lz10.h"
+#include "mh_rle.h"
+#include "mh_huffman.h"
 
 void mh_asset_init(mh_asset *asset) {
     if (!asset) {

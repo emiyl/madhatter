@@ -1,4 +1,4 @@
-#include "nazo_list.h"
+#include "mh_nazo_list.h"
 
 #include <stdlib.h>
 #include <string.h>

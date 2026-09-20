@@ -1,8 +1,8 @@
-#include "file.h"
+#include "mh_file.h"
 
-#include "huffman.h"
-#include "lz10.h"
-#include "rle.h"
+#include "mh_huffman.h"
+#include "mh_lz10.h"
+#include "mh_rle.h"
 
 #include <stdlib.h>
 #include <string.h>

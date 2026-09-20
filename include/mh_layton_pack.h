@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "archive.h"
+#include "mh_archive.h"
 
 #ifdef __cplusplus
 extern "C" {

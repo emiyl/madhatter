@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "asset.h"
+#include "mh_asset.h"
 
 #ifdef __cplusplus
 extern "C" {

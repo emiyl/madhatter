@@ -1,9 +1,9 @@
-#include "image.h"
+#include "mh_image.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-#include "stream.h"
+#include "mh_stream.h"
 
 #define MH_IMAGE_TILE_PIXELS 64u /* 8x8 */
 #define MH_IMAGE_MAX_PALETTE 256u

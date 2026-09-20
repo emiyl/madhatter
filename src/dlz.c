@@ -1,4 +1,4 @@
-#include "dlz.h"
+#include "mh_dlz.h"
 
 #include <stdlib.h>
 #include <string.h>
