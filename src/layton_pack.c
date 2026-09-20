@@ -23,25 +23,33 @@ static uint32_t mh_align4(uint32_t v) {
 
 static int mh_read_padded_name(const uint8_t *src, size_t src_len, size_t offset, size_t name_len, char **out_name) {
     size_t i;
+    size_t end;
     char *name;
 
     if (!src || !out_name || offset >= src_len || name_len == 0u) {
         return -1;
     }
 
-    name = malloc(name_len + 1u);
+    end = name_len;
+    for (i = 0u; i < name_len; ++i) {
+        if (offset + i >= src_len) {
+            return -1;
+        }
+        if (src[offset + i] == '\0') {
+            end = i;
+            break;
+        }
+    }
+
+    name = malloc(end + 1u);
     if (!name) {
         return -1;
     }
 
-    for (i = 0u; i < name_len; ++i) {
-        if (offset + i >= src_len) {
-            free(name);
-            return -1;
-        }
+    for (i = 0u; i < end; ++i) {
         name[i] = (char)src[offset + i];
     }
-    name[name_len] = '\0';
+    name[end] = '\0';
     *out_name = name;
     return 0;
 }

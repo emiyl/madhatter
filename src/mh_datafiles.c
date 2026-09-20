@@ -166,10 +166,8 @@ int mh_datafiles_get_pack(const mh_datafiles *df, const char *rel_path, mh_archi
         result = mh_archive_load_layton_pack2(out, data.data, data.len);
     } else {
         result = mh_archive_load_layton_pack(out, data.data, data.len, 1);
-        if (result != 0) {
-            result = mh_archive_load_layton_pack2(out, data.data, data.len);
-        }
     }
+
     mh_buffer_free(&data);
     return result;
 }
