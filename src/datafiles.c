@@ -123,18 +123,18 @@ int mh_datafiles_get_data(const mh_datafiles *df, const char *rel_path, mh_buffe
     int result;
 
     if (!df || !rel_path || !out) {
-        return RESULT_ERROR_INVALID_ARGUMENT;
+        return RESULT_ERR_INVALID_ARGUMENT;
     }
     if (mh_datafiles_build_path(df, rel_path, path, sizeof(path)) != 0) {
-        return RESULT_ERROR_UNKNOWN;
+        return RESULT_ERR_UNKNOWN;
     }
     if (mh_datafiles_read_raw(path, &raw, &raw_len) != 0) {
-        return RESULT_ERROR_FILE_NOT_FOUND;
+        return RESULT_ERR_NOT_FOUND;
     }
 
     if (mh_asset_init_from_bytes(&asset, raw, raw_len) != 0) {
         free(raw);
-        return RESULT_ERROR_INVALID_ARGUMENT;
+        return RESULT_ERR_INVALID_ARGUMENT;
     }
     
     free(raw);
