@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 static int mh_archive_ensure_capacity(mh_archive *archive, size_t required) {
     mh_archive_entry *new_entries = NULL;
@@ -92,6 +93,7 @@ mh_archive_entry *mh_archive_get(mh_archive *archive, const char *name) {
     size_t i = 0u;
 
     if (!archive || !name) {
+        fprintf(stderr, "madhatter: invalid arguments to mh_archive_get\n");
         return NULL;
     }
 

@@ -183,16 +183,19 @@ int mh_datafiles_get_packed_data(const mh_datafiles *df,
     int result;
 
     if (!df || !pack_rel_path || !filename || !out) {
+        fprintf(stderr, "madhatter: invalid arguments to mh_datafiles_get_packed_data\n");
         return -1;
     }
 
     if (mh_datafiles_get_pack(df, pack_rel_path, &archive) != 0) {
+        fprintf(stderr, "madhatter: failed to get pack '%s'\n", pack_rel_path);
         return -1;
     }
 
     entry = mh_archive_get(&archive, filename);
     if (!entry) {
         mh_archive_free(&archive);
+        fprintf(stderr, "madhatter: failed to find entry '%s' in pack '%s'\n", filename, pack_rel_path);
         return -1;
     }
 
