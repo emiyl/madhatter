@@ -1,4 +1,4 @@
-#include "mh_anim.h"
+#include "anim.h"
 
 #include <stdlib.h>
 #include <string.h>

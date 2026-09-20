@@ -1,4 +1,4 @@
-#include "mh_image.h"
+#include "image.h"
 
 #include <stdlib.h>
 #include <string.h>
